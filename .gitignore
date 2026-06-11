@@ -1,0 +1,17 @@
+# folder inside data
+data/*
+!data/_dataset.py
+!data/_dictbase.txt
+__pycache__
+.DS_Store
+*.pdf
+figure/*
+plot/*.xlsx
+plot/*.csv
+plot/*.svg
+plot/*.png
+plot/*.pdf
+plot/generation/*
+prediction/datasets/*
+archive/*
+*.html
