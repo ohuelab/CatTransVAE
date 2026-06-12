@@ -437,19 +437,19 @@ def xprompt_sampler(model_sampler, start_prompt, n_samples=1, limit_gen_size=300
                             # display(Chem.MolFromSmiles(next_prompt))
                             break
                         if dummy_attaches_enabled:
-                            dummy_attach = ["C"]
-                            # dummy_attach = ["C", "[H]", "C"*random.randint(2, 5), "N", "Cl", "Br", "C(c1ccccc1)", "C(C)(C)C"]
+                            # dummy_attach = ["C"]
+                            dummy_attach = ["C", "[H]", "C"*random.randint(2, 5), "N", "Cl", "Br", "C(c1ccccc1)", "C(C)(C)C"]
                         else:
                             dummy_attach = ["C"]
                         start_prompt = [t if "*" not in t else random.choice(dummy_attach) for t in tokens_start]
                         start_prompt = "".join(start_prompt)
                         # print("New prompt:", start_prompt)
                         if dummy_attaches_enabled:
-                            # if len(start_prompt) < 50:
-                            #     dump_prompt = "C"*random.randint(5, 20)
-                            # elif len(start_prompt) < 200:
-                            #     dump_prompt = "C"*random.randint(1,5)
-                            dump_prompt = "CCCCCCCC"
+                            if len(start_prompt) < 20:
+                                dump_prompt = "C"*random.randint(5, 10)
+                            elif len(start_prompt) < 50:
+                                dump_prompt = "C"*random.randint(1, 5)
+                            # dump_prompt = "CCCCCCCC"
                         else:
                             dump_prompt = ""
                         if "." in start_prompt:
