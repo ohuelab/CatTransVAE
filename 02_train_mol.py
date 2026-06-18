@@ -30,9 +30,6 @@ def train(args):
             print("Finetuning mode: not updating beta_init based on checkpoint epoch.")
         else:
             start_epoch = ckpt['epoch']+1
-            # total_epochs = args.epochs 
-            # beta_init = (args.beta - args.beta_init) / total_epochs * start_epoch
-            # args.beta_init = beta_init
     
     if os.path.exists(os.path.join(args.data_dir, args.data_source, f"split_{args.seed}.csv")):
         print("Loading existing train/val/test split from CSV...")

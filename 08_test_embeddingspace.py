@@ -77,10 +77,6 @@ def embeddingspace(args):
     # load model
     print('Loading model...')
     # minimal args required by model_init: ensure attributes exist
-    # if not hasattr(args, 'model_type'):
-    #     args.model_type = 'transvae'
-    # if not hasattr(args, 'save_name'):
-    #     args.save_name = None
     vae = model_init(args, mode='inference', load_fn=args.checkpoint)
     vae.model.eval()
 
@@ -125,25 +121,12 @@ def embeddingspace(args):
     # prepare palette
     sources = df_sample['source'].astype(str).tolist()
     sources_order = sorted(list(set(sources)), key=lambda x: custom_order.index(x) if x in custom_order else len(custom_order))
-    # unique_sources = sorted(list(dict.fromkeys(sources)))
-    # assign palette deterministically
-    # pal = {s: c for s, c in zip(unique_sources, sns.color_palette(colors, n_colors=len(unique_sources)))}
     pal = {s: c for s, c in zip(sources_order, sns.color_palette(colors, n_colors=len(set(sources))))}
     pal["PubChem"] = "black"
 
     # Plot t-SNE
     print('Plotting t-SNE')
     plt.figure(figsize=(10, 8), dpi=300)
-    # for s in unique_sources:
-    #     mask = [x == s for x in sources]
-    #     plt.scatter(X_tsne[np.array(mask), 0], X_tsne[np.array(mask), 1], s=8, color=pal[s], label=s, alpha=0.8)
-    # plt.title('Embedding space (t-SNE)')
-    # plt.xlabel('t-SNE 1')
-    # plt.ylabel('t-SNE 2')
-    # ax = plt.gca()
-    # ax.spines['right'].set_visible(False)
-    # ax.spines['top'].set_visible(False)
-    # leg = plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
     sns.scatterplot(
         x='tsne_1',
         y='tsne_2',

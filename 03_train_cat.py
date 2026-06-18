@@ -28,9 +28,6 @@ def train(args):
             print("Finetuning mode: not updating beta_init based on checkpoint epoch.")
         else:
             start_epoch = ckpt['epoch']+1
-            # total_epochs = args.epochs 
-            # beta_init = (args.beta - args.beta_init) / total_epochs * start_epoch
-            # args.beta_init = beta_init
     
     if os.path.exists(os.path.join(args.data_dir, args.data_source, f"split_{args.seed}.csv")):
         print("Loading existing train/val/test split from CSV...")
@@ -128,8 +125,7 @@ def train(args):
             similar_idx = []
             similar_limit = int(len(df_train) * 0.2)
 
-            # shuffle pretrain dataset
-            # df_pretrain = df_pretrain.sample(frac=1).reset_index(drop=True)
+            # expansion with pretrain dataset
             similar_mols = df_pretrain['smiles'].tolist()[:similar_limit]
             similar_idx = [f"{args.expansion}_{i}" for i in range(similar_limit)]
 
@@ -207,8 +203,6 @@ def train(args):
     print("Loaded best model from:", ckpt_path)
     print("Best val loss:", vae.best_loss)
     print("Best epoch:", vae.best_epoch)
-    # vae.model.eval()
-    # vae.test(test_idx, test_mols)
 
     ### Number of paramaters
     total_params = sum(p.numel() for p in vae.model.parameters())

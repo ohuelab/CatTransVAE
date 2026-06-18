@@ -173,7 +173,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.data_type == 'mol':
         build_vocab_mol(args)
-    # elif args.data_type == 'rxn':
-    #     build_vocab_rxn(args)
     else:
         raise ValueError(f'Invalid data type: {args.data_type}')
