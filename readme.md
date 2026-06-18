@@ -2,7 +2,7 @@
 
 Catalyst-specialized chemical language model based on a Transformer variational autoencoder (VAE) designed to improve catalyst recognition and generative performance across diverse catalyst classes through template-guided molecular design with high task-validity and diversity.
 
-<img width="2930" height="967" alt="GraphicalAbstact-s" src="" />
+<img width="2930" height="967" alt="GraphicalAbstact-s" src="https://raw.githubusercontent.com/ohuelab/CatTransVAE/refs/heads/main/image/abstract.png" />
 
 ## Google Colab 🪄
 
@@ -185,7 +185,7 @@ python 08_test_embeddingspace.py \
 
 - `<DATA_SOURCE>` : Data source to test (test set), e.g. pubchem10M, CatalystSet_S, CatalystSet_TMC_NoD, CatalystSet_TMC_D
 - `<CHECKPOINT>` : Trained model path to test `data/<DATA_SOURCE>/<EPOCH>_<DATA_SOURCE>_<SAVE_NAME>.ckpt` (e.g. data/CatalystSet_TMC_D/checkpoints/039_CatalystSet_TMC_D_L_10M01901_40_01_20.ckpt)
-- `<PROMPT>` : `"none"` or defined prompt e.g. `'CCCC[*:1]CC([*:2])'`
+- `<PROMPT>` : `'none'` or defined prompt e.g. `'CCCC[*:1]CC([*:2])'`
 - `<EXPERIMENT>` : Name of experiment
 - `decode_method` : `'greedy'`, `'beam'`
 - `sample_mode` :  `'rand'`, `'k_high_entropy'`, `'rand_training'`, `'rand_target'`
@@ -206,10 +206,28 @@ python 07_test_sample.py \
 --temperature 1.0 \
 --top_k 10 \
 --do_sample 'true' \
---dummy_attaches_enabled 'true' \
---n_samples 100 \
+--dummy_attaches_enabled 'false' \
+--n_samples 10 \
 --n_samples_per_batch 100 \
 --prompt <PROMPT> \
+--save_name <EXPERIMENT> \
+```
+
+```bash
+python 07_test_sample.py \
+--model_type transvae \
+--data_source <DATA_SOURCE> \
+--checkpoint <CHECKPOINT> \
+--sample_mode k_high_entropy \
+--decode_method beam \
+--k_entropy 50 \
+--temperature 1.0 \
+--top_k 10 \
+--do_sample 'true' \
+--dummy_attaches_enabled 'true' \
+--n_samples 10 \
+--n_samples_per_batch 100 \
+--prompt '[*:1]c1ccc([*:2]c2ccc([*:1])cc2)cc1' \
 --save_name <EXPERIMENT> \
 ```
 
@@ -282,7 +300,7 @@ python prediction/prediction_5fold.py \
 - `top_k` : used when `do_sample` is True
 - `do_sample` : `'true'` (select from probability), `'false'` (select highest probability)
 - `dummy_attaches_enabled` : `'true'` (enable dummy augmentation), `'false'` (use default (C) dummy)
-- `<PROMPT>` : `"none"` or defined prompt e.g. `'CCCC[*:1]CC([*:2])'`
+- `<PROMPT>` : `'none'` or defined prompt e.g. `'CCCC[*:1]CC([*:2])'`
 - `<DATASET>` : Already trained dataset
 - `<EMBEDDING>` : Already trained embedding
 - `<SEED>` : Seed
