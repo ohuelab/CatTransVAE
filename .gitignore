@@ -1,5 +1,4 @@
 # folder inside data
-data/*
 !data/_dataset.py
 !data/_dictbase.txt
 __pycache__
