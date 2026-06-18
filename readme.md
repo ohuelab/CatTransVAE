@@ -2,10 +2,13 @@
 
 Catalyst-specialized chemical language model based on a Transformer variational autoencoder (VAE) designed to improve catalyst recognition and generative performance across diverse catalyst classes through template-guided molecular design with high task-validity and diversity.
 
+<img width="2930" height="967" alt="GraphicalAbstact-s" src="" />
+
 ## Google Colab 🪄
 
-- Quick start usage with google colab (sampling, template-guied generation, and two-level embedding extraction)
+- Quick start usage with google colab 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1M1xLBqNfNvcaIvQs-6cyF92wmSFXXc-R/view?usp=sharing)
+- Include sampling, template-guied generation, and two-level embedding extraction
 
 ## Model 🦾
 
@@ -14,7 +17,8 @@ Catalyst-specialized chemical language model based on a Transformer variational 
 
 ## Datasets 📑
 
-- Pubchem10M: https://huggingface.co/datasets/hheiden/PubChem-124M-SMILES-SELFIES-InChI-IUPAC 
+- Pubchem: https://huggingface.co/datasets/hheiden/PubChem-124M-SMILES-SELFIES-InChI-IUPAC 
+- Pubchem10: Sample 10M molecules from PubChem dataset
 - CatalystSet: Original sources mentioned in paper
 
 
@@ -41,6 +45,9 @@ conda activate cattransvae
 
 ### Build vocabulary:
 
+- This is optional process. You can access dictionary in pubchem10 folder
+- Please download pubchem dataset and rename to `pubchem10M`
+
 ```bash
 python 01_build_vocab.py \
 --data_type mol \
@@ -51,8 +58,8 @@ python 01_build_vocab.py \
 
 ### Pre-train foundation model:
 
-- `<DATA_SOURCE>` : pubchem10M, CatalystSet_S, CatalystSet_TMC_NoD, CatalystSet_TMC_D
-- `<SAVE_NAME>` : Name of experiment
+- `<DATA_SOURCE>` : Dataset for pre-training e.g., pubchem10M, CatalystSet_S, CatalystSet_TMC_NoD, CatalystSet_TMC_D
+- `<SAVE_NAME>` : Name of model
 
 ```bash
 python 02_train_mol.py \
@@ -73,9 +80,9 @@ python 02_train_mol.py \
 
 #### Continue training from checkpoint:
 
-- `<DATA_SOURCE>` : pubchem10M, CatalystSet_S, CatalystSet_TMC_NoD, CatalystSet_TMC_D
-- `<SAVE_NAME>` : Name of experiment
-- `<CHECKPOINT>` : Previous pretrained model path `data/<DATA_SOURCE>/<EPOCH_TO_CONTINUE>_<DATA_SOURCE>_<SAVE_NAME>.ckpt` (e.g. data/pubchem10M/checkpoints/012_pubchem10M_model_20_05_10.ckpt)
+- `<DATA_SOURCE>` : Dataset for pre-training e.g., pubchem10M, CatalystSet_S, CatalystSet_TMC_NoD, CatalystSet_TMC_D
+- `<SAVE_NAME>` : Name of model
+- `<CHECKPOINT>` : Previous pretrained model path `data/<DATA_SOURCE>/checkpoints/<EPOCH_TO_CONTINUE>_<DATA_SOURCE>_<SAVE_NAME>.ckpt` (e.g. data/pubchem10M/checkpoints/012_pubchem10M_model_20_05_10.ckpt)
 
 ```bash
 python 02_train_mol.py \
@@ -97,9 +104,9 @@ python 02_train_mol.py \
 
 ### Fine-tune foundation model to catalyst dataset:
 
-- `<DATA_SOURCE>` : CatalystSet_S, CatalystSet_TMC_NoD, CatalystSet_TMC_D
-- `<SAVE_NAME>` : Name of experiment
-- `<CHECKPOINT>` : Previous pretrained model path `data/<DATA_SOURCE_PRETRAINED>/<EPOCH_BEST_PRETRAINE>_<DATA_SOURCE_PRETRAINED>_<SAVE_NAME_PRETRAINE>.ckpt` (e.g. data/pubchem10M/checkpoints/019_pubchem10M_model_20_005_10.ckpt)
+- `<DATA_SOURCE>` : Dataset for finetuning e.g., CatalystSet_S, CatalystSet_TMC_NoD, CatalystSet_TMC_D
+- `<SAVE_NAME>` : Name of model
+- `<CHECKPOINT>` : Previous pretrained model path `data/<DATA_SOURCE_PRETRAINED>/checkpoints/<EPOCH_BEST_PRETRAINED>_<DATA_SOURCE_PRETRAINED>_<SAVE_NAME_PRETRAINED>.ckpt` (e.g. data/pubchem10M/checkpoints/019_pubchem10M_model_20_005_10.ckpt)
 
 ```bash
 python 03_train_cat.py \
@@ -120,9 +127,9 @@ python 03_train_cat.py \
 
 #### Continue fine-tuning from checkpoint:
 
-- `<DATA_SOURCE>` : CatalystSet_S, CatalystSet_TMC_NoD, CatalystSet_TMC_D
-- `<SAVE_NAME>` : Name of experiment
-- `<CHECKPOINT>` : Previous pretrained model path `data/<DATA_SOURCE>/<EPOCH_TO_CONTINUE>_<DATA_SOURCE>_<SAVE_NAME>.ckpt` (e.g. data/CatalystSet_TMC_D/checkpoints/028_CatalystSet_TMC_D_L_10M01901_50_01_25.ckpt)
+- `<DATA_SOURCE>` : Dataset for finetuning e.g., CatalystSet_S, CatalystSet_TMC_NoD, CatalystSet_TMC_D
+- `<SAVE_NAME>` : Name of model
+- `<CHECKPOINT>` : Previous fine-tuned model path `data/<DATA_SOURCE>/checkpoints/<EPOCH_TO_CONTINUE>_<DATA_SOURCE>_<SAVE_NAME>.ckpt` (e.g. data/CatalystSet_TMC_D/checkpoints/028_CatalystSet_TMC_D_L_10M01901_50_01_25.ckpt)
 
 
 ```bash
@@ -144,9 +151,9 @@ python 03_train_cat.py \
 
 ### Test reconstruction:
 
-`<DATA_SOURCE>` : Data source to test (test set), e.g. pubchem10M, CatalystSet_S, CatalystSet_TMC_NoD, CatalystSet_TMC_D
-`<CHECKPOINT> `: Trained model path to test `data/<DATA_SOURCE>/<EPOCH>_<DATA_SOURCE>_<SAVE_NAME>.ckpt` (e.g. data/CatalystSet_TMC_D/checkpoints/039_CatalystSet_TMC_D_L_10M01901_40_01_20.ckpt)
-<`EXPERIMENT>` : Name of experiment
+- `<DATA_SOURCE>` : Data source to test (test set), e.g. pubchem10M, CatalystSet_S, CatalystSet_TMC_NoD, CatalystSet_TMC_D
+- `<CHECKPOINT> `: Trained model path to test `data/<DATA_SOURCE>/checkpoints/<SELECTED_EPOCH>_<DATA_SOURCE>_<SAVE_NAME>.ckpt` (e.g. data/CatalystSet_TMC_D/checkpoints/039_CatalystSet_TMC_D_L_10M01901_40_01_20.ckpt)
+- `<EXPERIMENT>` : Name of experiment
 
 ```bash
 python 06_test_recon.py \
@@ -160,9 +167,9 @@ python 06_test_recon.py \
 
 ### Embedding space evaluation:
 
-- <DATA_SOURCE> : Data source to test (test set), e.g. pubchem10M, CatalystSet_S, CatalystSet_TMC_NoD, CatalystSet_TMC_D
-- <CHECKPOINT> : Trained model path to test data/<DATA_SOURCE>/<EPOCH>_<DATA_SOURCE>_<SAVE_NAME>.ckpt (e.g. data/CatalystSet_TMC_D/checkpoints/039_CatalystSet_TMC_D_L_10M01901_40_01_20.ckpt)
-- <EXPERIMENT> : Name of experiment
+- `<DATA_SOURCE>` : Data source to test (test set), e.g. pubchem10M, CatalystSet_S, CatalystSet_TMC_NoD, CatalystSet_TMC_D
+- `<CHECKPOINT>` : Trained model path to test `data/<DATA_SOURCE>/checkpoints/<EPOCH>_<DATA_SOURCE>_<SAVE_NAME>.ckpt` (e.g. data/CatalystSet_TMC_D/checkpoints/039_CatalystSet_TMC_D_L_10M01901_40_01_20.ckpt)
+- `<EXPERIMENT>` : Name of experiment
 
 ```bash
 python 08_test_embeddingspace.py \
@@ -178,8 +185,15 @@ python 08_test_embeddingspace.py \
 
 - `<DATA_SOURCE>` : Data source to test (test set), e.g. pubchem10M, CatalystSet_S, CatalystSet_TMC_NoD, CatalystSet_TMC_D
 - `<CHECKPOINT>` : Trained model path to test `data/<DATA_SOURCE>/<EPOCH>_<DATA_SOURCE>_<SAVE_NAME>.ckpt` (e.g. data/CatalystSet_TMC_D/checkpoints/039_CatalystSet_TMC_D_L_10M01901_40_01_20.ckpt)
-- `<PROMPT>` : "none" or defined prompt e.g. 'CCCC[*:1]CC([*:2])'
+- `<PROMPT>` : `"none"` or defined prompt e.g. `'CCCC[*:1]CC([*:2])'`
 - `<EXPERIMENT>` : Name of experiment
+- `decode_method` : `'greedy'`, `'beam'`
+- `sample_mode` :  `'rand'`, `'k_high_entropy'`, `'rand_training'`, `'rand_target'`
+- `k_entropy` :  `-1` (for random), `1`, `10`, `50`, ... `512` (for k_high_entropy)
+- `temperature` : `1.0` (default), or floating points
+- `top_k` : used when `do_sample` is True
+- `do_sample` : `'true'` (select from probability), `'false'` (select highest probability)
+- `dummy_attaches_enabled` : `'true'` (enable dummy augmentation), `'false'` (use default (C) dummy)
 
 ```bash
 python 07_test_sample.py \
@@ -190,8 +204,9 @@ python 07_test_sample.py \
 --decode_method greedy \
 --k_entropy -1 \
 --temperature 1.0 \
---top_k 25 \
+--top_k 10 \
 --do_sample 'true' \
+--dummy_attaches_enabled 'true' \
 --n_samples 100 \
 --n_samples_per_batch 100 \
 --prompt <PROMPT> \
@@ -202,8 +217,8 @@ python 07_test_sample.py \
 
 This is the code for testing 6 example case studies reported in paper.
 - `<DATA_SOURCE>` : Data source to test (test set), e.g. pubchem10M, CatalystSet_S, CatalystSet_TMC_NoD, CatalystSet_TMC_D
-- `<CHECKPOINT>` : Trained model path to test `data/<DATA_SOURCE>/<EPOCH>_<DATA_SOURCE>_<SAVE_NAME>.ckpt` (e.g. data/CatalystSet_TMC_D/checkpoints/039_CatalystSet_TMC_D_L_10M01901_40_01_20.ckpt)
-- `<PROMPT>` : (prompted are defined inside python file)
+- `<CHECKPOINT>` : Trained model path to test `data/<DATA_SOURCE>/checkpoints/<EPOCH>_<DATA_SOURCE>_<SAVE_NAME>.ckpt` (e.g. data/CatalystSet_TMC_D/checkpoints/039_CatalystSet_TMC_D_L_10M01901_40_01_20.ckpt)
+- `<PROMPT>` : (prompts are defined inside python file)
 - `<EXPERIMENT>` : Name of experiment
 
 ```bash
@@ -226,19 +241,19 @@ python 07_test_sample_cases.py \
 ### Prediction 5-fold:
 
 - `<DATA_SOURCE>` : Data source to test (test set), e.g. pubchem10M, CatalystSet_S, CatalystSet_TMC_NoD, CatalystSet_TMC_D
-- `<CHECKPOINT>` : Trained model path to test `data/<DATA_SOURCE>/<EPOCH>_<DATA_SOURCE>_<SAVE_NAME>.ckpt` (e.g. data/CatalystSet_TMC_D/checkpoints/039_CatalystSet_TMC_D_L_10M01901_40_01_20.ckpt)
-- `<DATASET>` : 
+- `<CHECKPOINT>` : Trained model path to test `data/<DATA_SOURCE>/checkpoints/<EPOCH>_<DATA_SOURCE>_<SAVE_NAME>.ckpt` (e.g. data/CatalystSet_TMC_D/checkpoints/039_CatalystSet_TMC_D_L_10M01901_40_01_20.ckpt)
+- `<DATASET>` : example of datasets are
 suzuki_7054_split_random.csv,
 suzuki_7054_split_metal.csv,
 vaskas_1947_8010.csv,
 vaskas_1947_2040.csv,
 tepid_4703_7030.csv,
-tepid_4703_scaffold_2.csv
-- `<EMBEDDING>` : 
-CatTransVAE,
-CatTransVAE_vae,
-CatTransVAE_emb,
-MorganFP
+tepid_4703_scaffold_0.csv
+- `<EMBEDDING>` : example of embedding are
+`CatTransVAE` (for two-level embedding),
+`CatTransVAE_vae` (for VAE embedding),
+`CatTransVAE_emb` (for Transformer embedding),
+`MorganFP` (for Morgan fingerprint)
 - `<SEED>` : Seed
 - `<EXPERIMENT>` : Name of experiment
 
@@ -258,28 +273,18 @@ python prediction/prediction_5fold.py \
 ### Optimization and guided generation:
 
 - `<DATA_SOURCE>` : Data source to test (test set), e.g. pubchem10M, CatalystSet_S, CatalystSet_TMC_NoD, CatalystSet_TMC_D
-- `<CHECKPOINT_GEN>` : Trained model path to test `data/<DATA_SOURCE>/<EPOCH>_<DATA_SOURCE>_<SAVE_NAME>.ckpt` (e.g. data/CatalystSet_TMC_D/checkpoints/039_CatalystSet_TMC_D_L_10M01901_40_01_20.ckpt)
-- `<CHECKPOINT_PRED>` : Saved trained best xgboost model folder (e.g. prediction/results/suzuki_7054_split_random_split_1.csv/1_CatTransVAE_039_CatalystSet_TMC_D_L_10M01901_40_01_20.ckpt/20260531_222307_7815518)
-- sample_mode = ['rand', 'k_high_entropy', 'rand_training', 'rand_target']
-- decode_method = ['greedy', 'beam']
-- k_entropy = integer number
-- temperature = floating number
-- top_k = -1
-- do_sample = true/false
-- dummy_attaches_enabled = true/false
-- `<PROMPT>` : "none" or defined prompt e.g. 'CCCC[*:1]CC([*:2])'
-- `<DATASET>` : 
-suzuki_7054_split_random.csv,
-suzuki_7054_split_metal.csv,
-vaskas_1947_8010.csv,
-vaskas_1947_2040.csv,
-tepid_4703_7030.csv,
-tepid_4703_scaffold_2.csv
-- `<EMBEDDING>` : 
-CatTransVAE,
-CatTransVAE_vae,
-CatTransVAE_emb,
-MorganFP
+- `<CHECKPOINT_GEN>` : Trained model path to test `data/<DATA_SOURCE>/checkpoint/<EPOCH>_<DATA_SOURCE>_<SAVE_NAME>.ckpt` (e.g. data/CatalystSet_TMC_D/checkpoints/039_CatalystSet_TMC_D_L_10M01901_40_01_20.ckpt)
+- `<CHECKPOINT_PRED>` : Saved trained best xgboost model folder `prediction/results/<DATASET>/<SEED>_<EMBEDDING>_<MODEL_NAME>.ckpt/<EXPERIMENT>` (e.g. prediction/results/suzuki_7054_split_random_split_1.csv/1_CatTransVAE_039_CatalystSet_TMC_D_L_10M01901_40_01_20.ckpt/20260531_222307_7815518)
+- `decode_method` : `'greedy'`, `'beam'`
+- `sample_mode` :  `'rand'`, `'k_high_entropy'`, `'rand_training'`, `'rand_target'`
+- `k_entropy` :  `-1` (for random), `1`, `10`, `50`, ... `512` (for k_high_entropy)
+- `temperature` : `1.0` (default), or floating points
+- `top_k` : used when `do_sample` is True
+- `do_sample` : `'true'` (select from probability), `'false'` (select highest probability)
+- `dummy_attaches_enabled` : `'true'` (enable dummy augmentation), `'false'` (use default (C) dummy)
+- `<PROMPT>` : `"none"` or defined prompt e.g. `'CCCC[*:1]CC([*:2])'`
+- `<DATASET>` : Already trained dataset
+- `<EMBEDDING>` : Already trained embedding
 - `<SEED>` : Seed
 - `<EXPERIMENT>` : Name of experiment
 
@@ -311,5 +316,5 @@ python optimization/optimization.py \
 Thank you for your interests, please kindly cite:
 
 ```bibtex
-TBA
+TBA...
 ```
