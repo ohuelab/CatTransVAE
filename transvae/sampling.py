@@ -106,19 +106,24 @@ def sampling(vae,
             _, mus, _ = vae.calc_mems(entropy_data_index, entropy_data_mols, save=True)
 
         if sample_mode in ['high_entropy', 'k_high_entropy']:
+            # check entropy of each dimension in mus
             vae_entropy = calc_entropy(mus)
-            # print("vae_entropy", vae_entropy)
+            print("vae_entropy", vae_entropy)
+            if save_path is not None:
+                with open(save_path.replace('.csv', '_entropy.txt'), 'w') as f:
+                    for i, ent in enumerate(vae_entropy):
+                        f.write(f"Dimension {i}: {ent}\n")
+
         elif sample_mode in ['rand_training', 'rand_target']:
             embedding_train = mus
             # print("embedding_train shape:", embedding_train.shape)
-    
+
     if sample_mode == 'high_entropy':
         # select dimensions with entropy above cutoff
         sample_dims = np.where(np.array(vae_entropy) > entropy_cutoff)[0]
     elif sample_mode == 'k_high_entropy':
         # select top k dimensions with highest entropy
         # sample_dims = np.argpartition(np.array(vae_entropy), -k_entropy)[-k_entropy:]
-        print("vae_entropy:", vae_entropy)
         sample_dims = np.argsort(vae_entropy)[-k_entropy:]
     elif sample_mode == 'rand':
         # sample from all dimensions
@@ -196,8 +201,6 @@ def sampling(vae,
                 if mol is not None:
                     mols.append(mol)
         if len(mols) > 0:
-            # img = Draw.MolsToGridImage(mols, molsPerRow=5, subImgSize=(300,300))
-            # img.save(save_path.replace('.csv', '.png'))
             display_molecule(mols)
             plt.savefig(save_path.replace('.csv', '.png'))
         else:
