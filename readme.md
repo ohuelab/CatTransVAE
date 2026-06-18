@@ -2,7 +2,7 @@
 
 Catalyst-specialized chemical language model based on a Transformer variational autoencoder (VAE) designed to improve catalyst recognition and generative performance across diverse catalyst classes through template-guided molecular design with high task-validity and diversity.
 
-<img width="2930" height="967" alt="GraphicalAbstact-s" src="https://raw.githubusercontent.com/ohuelab/CatTransVAE/refs/heads/main/image/abstract.png" />
+<img width="631" height="380" alt="GraphicalAbstact-s" src="https://raw.githubusercontent.com/ohuelab/CatTransVAE/refs/heads/main/image/abstract.png" />
 
 ## Google Colab 🪄
 
