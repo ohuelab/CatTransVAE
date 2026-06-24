@@ -4,25 +4,27 @@ Catalyst-specialized chemical language model based on a Transformer variational 
 
 <img width="631" height="380" alt="GraphicalAbstact-s" src="https://raw.githubusercontent.com/ohuelab/CatTransVAE/refs/heads/main/image/abstract.png" />
 
-## Google Colab 🪄
+## 🪄 Google Colab
 
 - Quick start usage with google colab 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1M1xLBqNfNvcaIvQs-6cyF92wmSFXXc-R/view?usp=sharing)
 - Include sampling, template-guied generation, and two-level embedding extraction
 
-## Model 🦾
+## 🦾 Model
 
-- TransVAE on pubchem10: [019_pubchem10M_model_20_01_10](https://science-tokyo.box.com/s/n8xau7b2b4y46kb85b4haigewbkkuzbb)
-- CatTransVAE on CatalystSet_TMC_D: [039_CatalystSet_TMC_D_L_10M01901_40_01_20](https://science-tokyo.box.com/s/lasru81kuhx58prquq9qawbavvtmarec)
+| Model  | Version | Parameters | Link |
+| ------------- | ------------- | ------------- | ------------- |
+| **TransVAE** on pubchem10  | 019_pubchem10M_model_20_01_10 | 9.8M | [download](https://science-tokyo.box.com/s/n8xau7b2b4y46kb85b4haigewbkkuzbb) |
+| **CatTransVAE** on CatalystSet_TMC_D  | 039_CatalystSet_TMC_D_L_10M01901_40_01_20 | 9.8M | [download](https://science-tokyo.box.com/s/lasru81kuhx58prquq9qawbavvtmarec) |
 
-## Datasets 📑
+## 📑 Datasets
 
 - Pubchem: https://huggingface.co/datasets/hheiden/PubChem-124M-SMILES-SELFIES-InChI-IUPAC 
 - Pubchem10: Sample 10M molecules from PubChem dataset
 - CatalystSet: Original sources mentioned in paper
 
 
-## Installation 🛠️
+## 🛠️ Installation
 
 Install dependencies. This code was tested in Python 3.8 with PyTorch and rdkit.
 
@@ -31,7 +33,7 @@ conda create -f cattransvae.yaml
 conda activate cattransvae
 ```
 
-## Usage 📔
+## 📔 Usage
 
 - [Build vocabulary](#build-vocabulary)
 - [Pre-train foundation model](#pre-train-foundation-model)
@@ -329,7 +331,7 @@ python optimization/optimization.py \
 --save_name <EXPERIMENT>
 ```
 
-## Citation
+## 📄 Citation
 
 Thank you for your interests, please kindly cite:
 
