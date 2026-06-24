@@ -34,7 +34,7 @@ def model_init(args, mode="training", load_fn=None, finetune=False, property_ext
 def vocab_parser():
     parser = argparse.ArgumentParser()
     ### Vocab Parameters
-    parser.add_argument('--data_type', choices=['mol', 'rxn'], required=True, type=str)
+    parser.add_argument('--data_type', choices=['mol'], required=True, type=str)
     parser.add_argument('--data_source', required=True, type=str)
     parser.add_argument('--max_len', default=300, type=int)
     parser.add_argument('--freq_penalty', default=0.5, type=float)

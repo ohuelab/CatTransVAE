@@ -21,29 +21,7 @@ class MolDataset(Dataset):
         # Return a tuple: data_idx, data_mol
         return (self.data_idx[idx],
                 self.data_mol[idx])
-    
-class CombinedDataset(Dataset):
-    def __init__(self, data_idx, data_catalyst, cond_reactant, cond_reagent, cond_product, cond_procedure=None, prop=None):
-        self.data_idx = data_idx
-        self.data_catalyst = data_catalyst.long()
-        self.cond_reactant = cond_reactant.long()
-        self.cond_reagent = cond_reagent.long()
-        self.cond_product = cond_product.long()
-        self.cond_procedure = cond_procedure
-        self.prop = prop
 
-    def __len__(self):
-        return len(self.data_idx)
-
-    def __getitem__(self, idx):
-        # Return a tuple: data_idx, data_catalyst, cond_reactant, cond_reagent, cond_product, cond_procedure, prop
-        return (self.data_idx[idx],
-                self.data_catalyst[idx],
-                self.cond_reactant[idx],
-                self.cond_reagent[idx],
-                self.cond_product[idx],
-                self.cond_procedure[idx],
-                self.prop[idx])
     
 def vae_data_gen(data_source, idx, mols, char_dict):
     encoding_len = 300
