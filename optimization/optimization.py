@@ -13,7 +13,7 @@ from rdkit.Chem import Draw
 
 import joblib
 from xgboost import XGBRegressor
-sys.path.append("/gs/bs/tga-ohuelab/kengkanna/CatXPro/")
+sys.path.append("/CatTransVAE/")
 from transvae.parsers import device_init, optimization_parser_mol
 from transvae.sampling import sampling
 from transvae.training_mol import TransVAE
@@ -29,9 +29,7 @@ custom_params = {"axes.spines.right": False, "axes.spines.top": False}
 # sns.set_theme(font="Helvetica", style="ticks", rc=custom_params)
 sns.set_theme(style="ticks", rc=custom_params)
 
-# colors_main = ["#F34D6F"]
 colors_main = ["#E37185"]
-# colors = ["#5971C5", "#F29344", "#458B73", "#F1C54E", "#7955BD", "#5DA6C5", "#96606B", "#ADCA63", "#AE2A2A", "#7D7330"]
 colors = ["#5971C5", "#889ADB", "#B7C6F9", "#E1E8FF"]
 light_black = "#595A5A"
 black = "#1F1F1F"
@@ -52,8 +50,6 @@ def optimize(args):
     ckp_gen_model = args.checkpoint_gen.split("/")[-1].replace(".pt", "")
     ckp_pred_model = args.checkpoint_pred
     save_name = args.save_name
-    # save_name = f"{pred_data}/{seed}_{pred_emb}_{ckp_pred_model}/{save_name}"
-    # folder_pred_data = "prediction/results/"+f"{pred_data.split('.')[0]}_split_{seed}.csv"
     save_name = f"{ckp_pred_model}/opt_{seed}_{save_name}"
 
     ### Dataset metadata
@@ -95,8 +91,6 @@ def optimize(args):
     # load xgboost model
     model_path = Path(ckp_pred_model, "xgboost_best_5fold_model.joblib")
     best_model = joblib.load(model_path)
-    # best_model = XGBRegressor()
-    # best_model.load_model("model.json") 
     print("best_model:", best_model)
 
     ### Make directory
@@ -160,8 +154,6 @@ def optimize(args):
         dimension_train =[(-2.5, 2.5)] * latent_dim
         d_select = np.random.choice(sample_dims, size=k_entropy, replace=False)
         # print("Selected dimensions:", d_select)
-        # for d in d_select:
-        #     z[:,d] = torch.randn(size)
         # loop not in d_select, set to 0
         # z = torch.randn((size, self.d_latent), device=device)
         for d in range(vae.d_latent):
@@ -217,8 +209,6 @@ def optimize(args):
             # z = torch.zeros((size, self.d_latent))
             d_select = np.random.choice(sample_dims, size=k_entropy, replace=False)
             # print("Selected dimensions:", d_select)
-            # for d in d_select:
-            #     z[:,d] = torch.randn(size)
             # loop not in d_select, set to 0
             # z = torch.randn((size, self.d_latent), device=device)
             for d in range(vae.d_latent):
@@ -259,11 +249,7 @@ def optimize(args):
     record_results = []
 
     def objective(z_opt, output=False):
-        # global objective_call_counts
-        # objective_call_counts += 1
-        # print("objective_call_counts:", objective_call_counts)
-
-        # z_opt = torch.randn(size, latent_dim, device=device, requires_grad=True)
+        
         z_opt = torch.tensor(z_opt, dtype=torch.float32, device=device).unsqueeze(0) # shape (1, latent_dim)
 
         with torch.no_grad():
@@ -289,7 +275,6 @@ def optimize(args):
                     do_sample=do_sample
                 )
                 # print("[OBJ] prompt:", prompt)
-                # print("dummy_attaches_enabled:", dummy_attaches_enabled)
                 decoded = xprompt_sampler(model_sampler=model_sampler_reduced, 
                                                 start_prompt=prompt,
                                                 n_samples=n_samples_per_batch, 
@@ -354,8 +339,8 @@ def optimize(args):
         func=objective,
         # dimensions=[(-1.0, 1.0)] * latent_dim,
         dimensions=dimension_train,
-        n_calls=350,
-        n_initial_points=150,
+        n_calls=200,
+        n_initial_points=50,
         acq_func="gp_hedge",
         random_state=seed
     )
@@ -363,10 +348,7 @@ def optimize(args):
     # best latent vector
     best_z = torch.tensor(result.x, dtype=torch.float32, device=device).unsqueeze(0)
 
-    # # decode best sample
-    # with torch.no_grad():
-    #     best_x = vae.decode(best_z)
-    #     best_score = predictor(best_x).item()
+    # decode best sample
     smiles, best_score, raw_score = objective(result.x, output=True)
     
     print("Best raw score:", raw_score)
@@ -379,7 +361,6 @@ def optimize(args):
         "score": [r["score"] for r in record_results],
         "smiles": [r["decoded"][0] for r in record_results],
         "raw_scores": [r["raw_score"] for r in record_results],
-        # "from_result_x_values": result.func_vals, 
     })
     results_df.to_csv(os.path.join(save_name,
                                 'optimization_results.csv'), index=False)
@@ -456,10 +437,6 @@ def optimize(args):
             df_Pd = df[df[_dataset_X].str.contains("Pd")]
             df_Pd_y = df_Pd[_dataset_y].values
             hist2 = sns.kdeplot(list(df_Pd_y), bw_adjust=0.8, color=colors[0], alpha=0.2, label="Dataset complexes", fill=True)
-        elif 'Cu' in prompt:
-            df_Cu = df[df[_dataset_X].str.contains("Cu")]
-            df_Cu_y = df_Cu[_dataset_y].values
-            hist3 = sns.kdeplot(list(df_Cu_y), bw_adjust=0.8, color=colors[0], alpha=0.2, label="Dataset complexes", fill=True)
         hist1 = sns.kdeplot(list(results_df["raw_scores"]), bw_adjust=0.8, color=colors_main[0], alpha=0.5, label="Optimized complexes", fill=True)
         # highlight optimization range as range in graph (−32.1 to −23.0) as light grey area
         ax.axvspan(-32.1, -23.0, color=light_black, alpha=0.2, label="Target region")
@@ -470,7 +447,9 @@ def optimize(args):
     order = ['Dataset complexes', 'Optimized complexes', 'Target region']
     handles_labels = dict(zip(labels, handles))
     ordered_handles = [handles_labels[label] for label in order]
-    plt.legend(ordered_handles, order)
+    # plt.legend(ordered_handles, order)
+    # legend outside of plot on the right
+    plt.legend(ordered_handles, order, loc='center left', bbox_to_anchor=(1, 0.5))
 
     plt.savefig(os.path.join(save_name, 'optimization_histogram.pdf'), bbox_inches='tight')
     plt.close()

@@ -13,7 +13,7 @@ from rdkit import DataStructs
 from rdkit.Chem import Draw
 from rdkit.Chem import AllChem
 
-sys.path.append("/gs/bs/tga-ohuelab/kengkanna/CatXPro/")
+sys.path.append("/CatTransVAE/")
 from transvae.sampling import reconstructing, sampling
 from transvae.training_mol import TransVAE
 from transvae.parsers import device_init, model_init, prediction_parser_mol
