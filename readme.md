@@ -23,6 +23,20 @@ Catalyst-specialized chemical language model based on a Transformer variational 
 - Pubchem10: Sample 10M molecules from PubChem dataset
 - CatalystSet: Original sources mentioned in paper
 
+    | Dataset | Ref | Link |
+    | ------------- | ------------- | ------------- |
+    | OSCAR_DHBD | [Paper](https://doi.org/10.1039/D2SC04251G) | [Data](https://archive.materialscloud.org/record/2022.106) |
+    | OSCAR_NHC | [Paper](https://doi.org/10.1039/D2SC04251G) | [Data](https://archive.materialscloud.org/record/2022.106) |
+    | OSCAR_SEED | [Paper](https://doi.org/10.1039/D2SC04251G) | [Data](https://archive.materialscloud.org/record/2022.106) |
+    | TEPid | [Paper](https://doi.org/10.1021/acs.organomet.3c00432) | [Data](https://github.com/DanielEss-lab/TEPid) |
+    | ReaLigand | [Paper](https://doi.org/10.1021/acs.jcim.3c01310) | [Data](https://github.com/DanielEss-lab/ReaLigands) |
+    | CLC-DB | [Paper](https://doi.org/10.1186/s13321-025-00991-9) | [Data](https://compbio.sjtu.edu.cn/services/clc-db) |
+    | tmQMg-L | [Paper](https://doi.org/10.1038/s43588-024-00616-5) | [Data](https://github.com/uiocompcat/tmQMg-L) |
+    | Kraken | [Paper](https://doi.org/10.1021/jacs.1c09718) | [Data](https://pubs.acs.org/doi/10.1021/jacs.1c09718#_i10) |
+    | ORD | [Paper](https://doi.org/10.1021/jacs.1c09820) | [Data](https://github.com/open-reaction-database/ord-data) |
+    | TMC_CSD | [Paper](https://doi.org/10.1186/s13321-025-01008-1) | [Data](https://github.com/jensengroup/xyz2mol_tm/tree/main) |
+    | TMC_TMQMG | [Paper](https://doi.org/10.1186/s13321-025-01008-1) | [Data](https://github.com/jensengroup/xyz2mol_tm/tree/main) |
+
 
 ## 🛠️ Installation
 
@@ -336,5 +350,5 @@ python optimization/optimization.py \
 Thank you for your interests, please kindly cite:
 
 ```bibtex
-TBA...
+Kengkanna, A., & Ohue, M. (2026). Catalyst-specialized Chemical Language Model Based on Transformer Variational Autoencoder for Catalyst Design and Discovery. ChemRxiv. https://doi.org/10.26434/chemrxiv.15005198/v1‌
 ```
