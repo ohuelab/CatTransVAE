@@ -427,21 +427,3 @@ class SublayerConnection(nn.Module):
         "Apply residual connection to any sublayer with the same size"
         return x + self.dropout(sublayer(self.norm(x)))
     
-
-# class TextConditionEmbedder(nn.Module):
-#     """
-#     Embedding vector of 768 dimensions to 256 dimensions
-#     """
-#     def __init__(self, input_dim=768, output_dim=256):
-#         super().__init__()
-#         self.net = nn.Sequential(
-#             nn.InstanceNorm1d(input_dim),
-#             nn.Linear(input_dim, 512),
-#             nn.ReLU(),
-#             nn.Dropout(0.2),
-#             nn.InstanceNorm1d(512),
-#             nn.Linear(512, output_dim),
-#         )
-
-#     def forward(self, x):
-#         return self.net(x)

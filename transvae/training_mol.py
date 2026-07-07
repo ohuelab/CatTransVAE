@@ -78,6 +78,7 @@ class VAEShell():
             state (dict, required): Dictionary containing model state
             fn (str, required): File name to save checkpoint with
             path (str): Folder to store saved checkpoints
+            use_name (bool): If true, appends model name to checkpoint file name
         """
         os.makedirs(path, exist_ok=True)
         if use_name:
@@ -101,13 +102,10 @@ class VAEShell():
         Train model and validate
 
         Arguments:
-            train_mols (np.array, required): Numpy array containing training
-                                             molecular structures
-            val_mols (np.array, required): Same format as train_mols. Used for
-                                           model development or validation
-                                   molecular structure
-            val_props (np.array): Same format as train_prop. Used for model
-                                 development or validation
+            train_idxs (np.array, required): Numpy array containing training indices
+            train_mols (np.array, required): Numpy array containing training molecular structures
+            val_idxs (np.array, required): Numpy array containing validation indices
+            val_mols (np.array, required): Same format as train_mols. Used for model development or validation molecular structure
             epochs (int): Number of epochs to train the model for
             save (bool): If true, saves latest and best versions of model
             save_freq (int): Frequency with which to save model checkpoints
@@ -492,6 +490,8 @@ class VAEShell():
             mem_pad_mask (torch.tensor, req): Mask for memory padding
             target (torch.tensor, req): Target tensor to decode
             target_pad_mask (torch.tensor, req): Mask for target padding
+            temperature (float): Temperature for sampling
+            top_k (int): Top-k sampling parameter
         """
         output = self.model.decode(mem, mem_pad_mask, target, target_pad_mask)
         output = self.model.generator(output)
@@ -525,6 +525,11 @@ class VAEShell():
         Arguments:
             mem (torch.tensor, req): Memory tensor to send to decoder
             src_mask (torch.tensor): Mask tensor to hide padding tokens 
+            condition (list): List of tokens to condition the decoding on
+            limit_max_len (int): Maximum length of decoded sequence
+            temperature (float): Temperature for sampling
+            top_k (int): Top-k sampling parameter
+            do_sample (bool): If true, samples from the probability distribution instead of taking the arg
         Returns:
             decoded (torch.tensor): Tensor of predicted token ids
         """
@@ -610,6 +615,9 @@ class VAEShell():
             mem (torch.tensor, req): Memory tensor to send to decoder
             src_mask (torch.tensor): Mask tensor to hide padding tokens (if
                                      model_type == 'transformer')
+            condition (list): List of tokens to condition the decoding on
+            beam_width (int): Number of beams to use in decoding
+            limit_max_len (int): Maximum length of decoded sequence
         """
         start_symbol = self.start_symbol
         pad_idx = self.pad_idx
@@ -687,11 +695,10 @@ class VAEShell():
         Method for encoding input smiles into memory and decoding back into smiles
 
         Arguments:
-            data (np.array, required): Input array consisting of smiles and property
+            data_idxs (np.array): Numpy array containing indices of data to reconstruct
+            data_mols (np.array): Numpy array containing molecular structures to reconstruct
             method (str): Method for decoding. Greedy decoding is currently the only
-                          method implemented. May implement beam search, top_p or top_k
-                          in future versions.
-            log (bool): If true, tracks reconstruction progress in separate log file
+                          method implemented. 
             return_mems (bool): If true, returns memory vectors in addition to decoded SMILES
             return_str (bool): If true, translates decoded vectors into SMILES strings. If false
                                returns tensor of token ids
@@ -762,7 +769,7 @@ class VAEShell():
         Method for evaluating the reconstruction performance of the model
 
         Arguments:
-            smiles (list, req): List of original SMILES strings
+            data_mols (list, req): List of original SMILES strings
         """
         condition = [tokenizer(smiles) for smiles in data_mols]
         # limit the length
@@ -861,6 +868,12 @@ class VAEShell():
             k_entropy (int): Number of high entropy dimensions to randomly sample from
             return_str (bool): If true, translates decoded vectors into SMILES strings. If false
                                returns tensor of token ids
+            prompt (str): Optional prompt to condition the decoding on
+            batch_size (int): Batch size for decoding
+            limit_max_len (int): Maximum length of decoded sequence
+            temperature (float): Temperature for sampling
+            top_k (int): Top-k sampling parameter
+            do_sample (bool): If true, samples from the probability distribution instead of taking the argmax
         Returns:
             decoded (list): Decoded smiles data - either decoded SMILES strings or tensor of
                             token ids
@@ -899,8 +912,8 @@ class VAEShell():
         Method for calculating and saving the memory of each neural net
 
         Arguments:
-            data (np.array, req): Input array containing SMILES strings
-            log (bool): If true, tracks calculation progress in separate log file
+            data_idxs (np.array): Numpy array containing indices of data to reconstruct
+            data_mols (np.array): Numpy array containing molecular structures to reconstruct
             save_dir (str): Directory to store output memory array
             save_fn (str): File name to store output memory array
             return_embedded (bool): If true, returns the embedded representations along with the memory
@@ -909,6 +922,8 @@ class VAEShell():
             mems(np.array): Reparameterized memory array
             mus(np.array): Mean memory array (prior to reparameterization)
             logvars(np.array): Log variance array (prior to reparameterization)
+            embeddings(np.array): Embedded representations of the input data (if return_embedded is True)
+            masks(np.array): Masks for the embedded representations (if return_embedded is True)
         """
         if save_fn == 'model_name':
             save_fn = self.name
@@ -1004,7 +1019,11 @@ class TransVAE(VAEShell):
                                      those written in this module
             name (str): Name of model (all save and log files will be written with
                         this name)
+            mode (str): Mode of operation. If "training", model will be built for
+                        training. If "inference", model will be built for inference.
             load_fn (str): Path to checkpoint file
+            finetune (bool): If true, model will be built for finetuning. If false,
+                             model will be built for training from scratch.
         """
         ### Store architecture params
         self.args = args if args != {} else argparse.Namespace()
@@ -1174,8 +1193,8 @@ class TransVAE(VAEShell):
         Loads a saved model state
 
         Arguments:
-            mode (str, required): "training" or "inference"
             checkpoint_path (str, required): Path to saved .ckpt file
+            mode (str, required): "training" or "inference"
             finetune (bool): If true, loads model for finetuning
         """
         loaded_checkpoint = torch.load(checkpoint_path, map_location=self.device, weights_only=False)

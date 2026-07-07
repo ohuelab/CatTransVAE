@@ -122,6 +122,7 @@ def plot_regression(true_values, predicted_values, measurements, save_path):
         true_values (list): A list of true values.
         predicted_values (list): A list of predicted values corresponding to the true values.
         measurements (dict): A list of measurement labels for each data point.
+        save_path (str): The path to save the plot.
     """
     plt.figure(figsize=(6,6), dpi=300)
     plt.scatter(true_values, predicted_values, alpha=0.8, color='#1C3077', edgecolors='none')
